@@ -1,21 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2024/03/20/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+    <title>易班答题助手使用手册</title>
+    <url>/2024/03/22/%E6%98%93%E7%8F%AD%E7%AD%94%E9%A2%98%E5%8A%A9%E6%89%8B%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</url>
+    <content><![CDATA[<h1 id="易班答题助手使用手册"><a href="#易班答题助手使用手册" class="headerlink" title="易班答题助手使用手册"></a>易班答题助手使用手册</h1><h4 id="开发背景"><a href="#开发背景" class="headerlink" title="开发背景"></a>开发背景</h4><blockquote>
+<p>易班主要用于马克思主义学院的考试答题使用，作为我们的成绩的一部分，每次做题可称为痛苦不堪，最初使用“学小易App”进行手动搜题，每次动辄几十道题目可谓痛苦，后来“学小易App”开启次数限制，每次搜几个还要看一分钟广告，后来出现其他的刷课，这个结果大家也是比较熟知，被举报后成绩作废，但是现在还要面临易班答题的问题，所以我写了这个简陋版的答题助手，提供给有需要的人</p>
+</blockquote>
+<h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><h5 id="使用须知"><a href="#使用须知" class="headerlink" title="使用须知"></a>使用须知</h5><ul>
+<li>启动易班答题助手需要三个参数分别为：<mark class="hl-label default">易班的Token</mark> 、<mark class="hl-label default">易班的JSESSIOID</mark> 、<mark class="hl-label default">Wx_Open_Id</mark> </li>
+<li>其中 易班的两个参数很容易获得，Wx_Open_Id 需要抓包获得</li>
+<li>这三个参数中Token 和 Wx_Open_Id 是固定不变的 第一次获取到后可以记录下来 方便后续的使用，JSESSIOID是否固定不清楚，不过一般来说是不会固定的，所以最好每次使用的时候获取一次</li>
+</ul>
+<h5 id="下载易班助手"><a href="#下载易班助手" class="headerlink" title="下载易班助手"></a>下载易班助手</h5><div calss='anzhiyu-tag-link'><a class="tag-Link" target="_blank" href="https://pan.baidu.com/s/1ZBsEGenWLcFaSnthJul2-Q?pwd=6666">
+    <div class="tag-link-tips">引用站外地址</div>
+    <div class="tag-link-bottom">
+        <div class="tag-link-left" style="">
+          <i class="anzhiyufont anzhiyu-icon-link" style=""></i>
+        </div>
+        <div class="tag-link-right">
+            <div class="tag-link-title">易班小助手</div>
+            <div class="tag-link-sitename"> 易班小助手下载地址</div>
+        </div>
+        <i class="anzhiyufont anzhiyu-icon-angle-right"></i>
+    </div>
+    </a></div>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h5 id="获取-Wx-Open-Id"><a href="#获取-Wx-Open-Id" class="headerlink" title="获取 Wx_Open_Id"></a>获取 Wx_Open_Id</h5><blockquote>
+<p>获取 Wx_Open_Id 需要抓包 也蛮简单的 无需担心，因为学小易App限制次数 没办法查询题目了 只能另辟蹊径，后面再同学哪里获知 小程序是可以无限制使用的，所以要依赖于微信的小程序，那么小程序就都得使用 Wx_Open_Id 所以我们必须得获取 这个 不然没办法使用小程序 也就没办法使用 小助手</p>
+</blockquote>
+<h5 id="下载-Burp-Suite"><a href="#下载-Burp-Suite" class="headerlink" title="下载 Burp Suite"></a>下载 Burp Suite</h5><p>Burp Suite是一个抓包工具，我们接下来要使用这个 去获取你的 Wx_Open_Id， 下面是我打包的 可能版本有点落后，想用新版可以自行百度下载</p>
+<div calss='anzhiyu-tag-link'><a class="tag-Link" target="_blank" href="https://pan.baidu.com/s/1AHTYySfsiHeJhy2eAa9qXg?pwd=6666">
+    <div class="tag-link-tips">引用站外地址</div>
+    <div class="tag-link-bottom">
+        <div class="tag-link-left" style="">
+          <i class="anzhiyufont anzhiyu-icon-link" style=""></i>
+        </div>
+        <div class="tag-link-right">
+            <div class="tag-link-title">Burp Suite</div>
+            <div class="tag-link-sitename"> Burp Suite下载地址</div>
+        </div>
+        <i class="anzhiyufont anzhiyu-icon-angle-right"></i>
+    </div>
+    </a></div>
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h5 id="使用Burp-Suite抓包"><a href="#使用Burp-Suite抓包" class="headerlink" title="使用Burp Suite抓包"></a>使用Burp Suite抓包</h5><ol>
+<li>登陆上你的微信  左上角搜索学小易</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726553.png"></p>
+<ol start="2">
+<li>点击进入 小程序</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726704.png"></p>
+<ol start="3">
+<li><p>打开 Burp Suite -&gt; 下一步-&gt;进入-&gt;代理-&gt;添加-&gt;端口弄成8080即可</p>
+<div class="tip warning"><p>如果你打不开 可能是电脑没有Java环境，因为这个软件是Java开发依赖于Java环境，如果打不开可以自行百度 Burp Suite安装教程</p>
+</div></li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726543.png" alt="image-20240322164728045"></p>
+<p><img src="https://hexo.lcgui.cn/article/202403221726567.png" alt="image-20240322164811076"></p>
+<p><img src="https://hexo.lcgui.cn/article/202403221726603.png" alt="image-20240322164857425"></p>
+<ol start="4">
+<li>打开你的电脑设置 搜索到这个 设置 点进去</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726694.png" alt="image-20240322165045799"></p>
+<ol start="5">
+<li>设置代理服务器</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726261.png"></p>
+<ol start="6">
+<li>这样就ok了 返回 Burp Suite 开始抓包即可</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726882.png" alt="image-20240322165919303"></p>
+<p>点击 “拦截禁用” 以后 打开你的学小易小程序 随便搜索一个题目（至少六个字符）</p>
+<p><img src="https://hexo.lcgui.cn/article/202403221726744.png" alt="image-20240322170142530"></p>
+<p>然后你在这里就能看到你的 Wx_Open_Id 了 现在你可以把它记录下来 留着以后用了</p>
+<p>记录完了记得要把  “拦截禁用”  关掉 否则 你的页面会被卡住 ， 也记得把设置的 代理服务器关掉 不然网络无法使用了</p>
+<p><img src="https://hexo.lcgui.cn/article/202403221746695.png" alt="image-20240322174613639"></p>
+<h5 id="获取Token和JSESSIONID"><a href="#获取Token和JSESSIONID" class="headerlink" title="获取Token和JSESSIONID"></a>获取Token和JSESSIONID</h5><h5 id="登录网页版易班"><a href="#登录网页版易班" class="headerlink" title="登录网页版易班"></a>登录网页版易班</h5><div calss='anzhiyu-tag-link'><a class="tag-Link" target="_blank" href="http://220.160.52.44:8080/">
+    <div class="tag-link-tips">引用站外地址</div>
+    <div class="tag-link-bottom">
+        <div class="tag-link-left" style="">
+          <i class="anzhiyufont anzhiyu-icon-link" style=""></i>
+        </div>
+        <div class="tag-link-right">
+            <div class="tag-link-title">易班网页版</div>
+            <div class="tag-link-sitename"> 易班网页版</div>
+        </div>
+        <i class="anzhiyufont anzhiyu-icon-angle-right"></i>
+    </div>
+    </a></div>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>正常登录 你的易班即可 </p>
+<ol>
+<li>登陆成功后 你会来到 如下页面</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726725.png" alt="image-20240322170717909"></p>
+<ol start="2">
+<li>打开你的浏览器控制台 或者按F12 快捷键也可， 找到 “应用(或者 Application)”，</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221726455.png" alt="image-20240322170938833"></p>
+<p>这样就找到了你的 token 后面那个值就是 你的token</p>
+<ol start="3">
+<li>JSESSIONID也是同理</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221725596.png" alt="image-20240322171108669"></p>
+<p>这样就行了 你就获取到了 三个值 就可以使用小助手了</p>
+<h5 id="正式使用"><a href="#正式使用" class="headerlink" title="正式使用"></a>正式使用</h5><ol>
+<li>解压出来小助手 打开</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221732740.png" alt="image-20240322173200667"></p>
+<ol start="2">
+<li>把你获取到的 值 填进去 直接输入进去 然后输入你想进行的 考试编号 就可以进行了</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221733161.png"></p>
+<ol start="3">
+<li>页面解释</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202403221737302.png" alt="image-20240322173728225"></p>
+<div class="tip warning"><p>请注意： 你的答案 大小写无所谓 但是 顺序不能错 否则 本题错误  例如：这道题的答案应该为ABC 你输入 ACB就会答案错误</p>
+</div>
+
+<h5 id="答题完成"><a href="#答题完成" class="headerlink" title="答题完成"></a>答题完成</h5><p><img src="https://hexo.lcgui.cn/article/202403221746014.jpg" alt="img"></p>
+<p>答题完成会获取到你获得到的分数</p>
+<p>可以到成绩列表查看</p>
+<p><img src="https://hexo.lcgui.cn/article/202403221746764.jpg" alt="img"></p>
+<h4 id="后续说明"><a href="#后续说明" class="headerlink" title="后续说明"></a>后续说明</h4><ul>
+<li>该工具纯属为了方便自己开发，如果造成任何后果 使用者自行承担</li>
+<li>后续会把代码分享出来 并且 会说明我的分析过程 遇到的问题等等</li>
+<li>因为这个工具是随意开发的 没有很好的规范 有bug在所难免 可以联系QQ: 97706396 或者评论区评论吧</li>
+</ul>
 ]]></content>
+      <categories>
+        <category>技术分享</category>
+      </categories>
+      <tags>
+        <tag>技术</tag>
+        <tag>必看</tag>
+        <tag>python</tag>
+        <tag>爬虫</tag>
+      </tags>
   </entry>
 </search>
