@@ -6,10 +6,19 @@
     <content><![CDATA[<h1 id="易班答题助手使用手册"><a href="#易班答题助手使用手册" class="headerlink" title="易班答题助手使用手册"></a>易班答题助手使用手册</h1><h4 id="开发背景"><a href="#开发背景" class="headerlink" title="开发背景"></a>开发背景</h4><blockquote>
 <p>易班主要用于马克思主义学院的考试答题使用，作为我们的成绩的一部分，每次做题可称为痛苦不堪，最初使用“学小易App”进行手动搜题，每次动辄几十道题目可谓痛苦，后来“学小易App”开启次数限制，每次搜几个还要看一分钟广告，后来出现其他的刷课，这个结果大家也是比较熟知，被举报后成绩作废，但是现在还要面临易班答题的问题，所以我写了这个简陋版的答题助手，提供给有需要的人</p>
 </blockquote>
-<h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><h5 id="使用须知"><a href="#使用须知" class="headerlink" title="使用须知"></a>使用须知</h5><ul>
+<h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><h5 id="工具介绍"><a href="#工具介绍" class="headerlink" title="工具介绍"></a>工具介绍</h5><ul>
+<li>这个工具不是自动答题易班的考试，是自动帮你搜索题目并把搜索到的题目显示出来，你根据搜索到的题目回答你的考试问题即可。</li>
+<li>理论上讲是不会被抓，因为本质是还是自己手动答题，只不过是帮助你省略了搜题的步骤，可以直接看到搜到的题</li>
+<li>搜题来源来自“学小易”准确度比较高，有少许几道搜不到是正常的，很难做到100%正确率</li>
+<li><img src="https://hexo.lcgui.cn/article/202403241217749.png" alt="image-20240322173728225"></li>
+</ul>
+<h5 id="使用须知"><a href="#使用须知" class="headerlink" title="使用须知"></a>使用须知</h5><ul>
 <li>启动易班答题助手需要三个参数分别为：<mark class="hl-label default">易班的Token</mark> 、<mark class="hl-label default">易班的JSESSIOID</mark> 、<mark class="hl-label default">Wx_Open_Id</mark> </li>
 <li>其中 易班的两个参数很容易获得，Wx_Open_Id 需要抓包获得</li>
 <li>这三个参数中Token 和 Wx_Open_Id 是固定不变的 第一次获取到后可以记录下来 方便后续的使用，JSESSIOID是否固定不清楚，不过一般来说是不会固定的，所以最好每次使用的时候获取一次</li>
+<li>我的建议是，先看完整篇使用手册感觉自己可以做，在进行实际操作，感觉有点困难，请联系你那学计算机的朋友。</li>
+<li>Wx_Open_ID大家是可以通用的，也就是如果使用者A获取到的 Wx_Open_ID 是可以提供给 使用者BCD使用的，暂时学小易也没有对每个微信账户进行次数限制，所以建议大家分享的时候分享给自己的朋友即可，使用太多次有没有什么后果我也不清楚。</li>
+<li>请先根据目录查看 “<mark class="hl-label default">常见问题</mark> ” 相关内容再使用该助手</li>
 </ul>
 <h5 id="下载易班助手"><a href="#下载易班助手" class="headerlink" title="下载易班助手"></a>下载易班助手</h5><div calss='anzhiyu-tag-link'><a class="tag-Link" target="_blank" href="https://pan.baidu.com/s/1ZBsEGenWLcFaSnthJul2-Q?pwd=6666">
     <div class="tag-link-tips">引用站外地址</div>
@@ -60,6 +69,14 @@
 <p><img src="https://hexo.lcgui.cn/article/202403221726543.png" alt="image-20240322164728045"></p>
 <p><img src="https://hexo.lcgui.cn/article/202403221726567.png" alt="image-20240322164811076"></p>
 <p><img src="https://hexo.lcgui.cn/article/202403221726603.png" alt="image-20240322164857425"></p>
+<p>设置完以后 你要打开你的浏览器 输入你刚才设置的地址 并且下载证书</p>
+<p><img src="https://hexo.lcgui.cn/article/202403241221131.png" alt="image-20240324122114077"></p>
+<p>下载完成后，点击打开并且开始安装证书</p>
+<p><img src="https://hexo.lcgui.cn/article/202403241225041.png" alt="image-20240324122526930"></p>
+<p><img src="https://hexo.lcgui.cn/article/202403241227167.png" alt="image-20240324122727110"></p>
+<p>然后一直点击下一步直至安装成功即可</p>
+<p><img src="https://hexo.lcgui.cn/article/202403241228805.png" alt="image-20240324122821756"></p>
+<p>这里解释下为什么安装这个证书：因为不安装证书的话 你无法拦截https的请求，我们想要的那个Wx_Open_ID刚好是https的请求 所以你不安装的话 是无法拦截到的，听不懂的话没关系，按步骤做即可。</p>
 <ol start="4">
 <li>打开你的电脑设置 搜索到这个 设置 点进去</li>
 </ol>
@@ -125,8 +142,16 @@
 <p>答题完成会获取到你获得到的分数</p>
 <p>可以到成绩列表查看</p>
 <p><img src="https://hexo.lcgui.cn/article/202403221746764.jpg" alt="img"></p>
+<h4 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h4><ol>
+<li>打开小助手，窗口一闪而过，自动关闭了：这种问题一般出现在 你的“Internet选项“ 里面的代理服务或者 ”Burp Suite“的”拦截请求“选项没有关闭 没有及时关闭</li>
+<li>还是一闪而过的情况 有可能你的易班有正在考试的情况，请打开易班网页版，根据提示进入考试 直接交卷即可。有正在考试的情况程序无法成功运行</li>
+<li>考试过程中出现网络卡顿，网络不能用的情况。也会导致答题失败，因为暂时没做容错处理，意味着你前面答题的结果全部无效，请保持网络通畅。</li>
+<li>网络卡顿明显特征就是 输入完答案，按完回车后 页面卡住不动，等一会自动关闭页面，这一般就是网络导致</li>
+<li>最重要的一点：如果出现以上任何一种情况，请手动打开 易班 手机&#x2F;网页版 都可以 会有正在考试的提示，进入后直接交卷，再使用助手答题，也就是 使用助手答题的前提条件是 你的账号不能有正在答题的情况。</li>
+</ol>
 <h4 id="后续说明"><a href="#后续说明" class="headerlink" title="后续说明"></a>后续说明</h4><ul>
 <li>该工具纯属为了方便自己开发，如果造成任何后果 使用者自行承担</li>
+<li>后续可能会做简单优化，容错处理，有正在考试的情况自动处理等</li>
 <li>后续会把代码分享出来 并且 会说明我的分析过程 遇到的问题等等</li>
 <li>因为这个工具是随意开发的 没有很好的规范 有bug在所难免 可以联系QQ: 97706396 或者评论区评论吧</li>
 </ul>
