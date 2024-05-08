@@ -564,6 +564,19 @@
 <p><img src="https://hexo.lcgui.cn/article/202405081105480.png" alt="image-20240508110539432"></p>
 <p>至此你的Jenkins就安装好了，至于具体的配置本篇文章就不在赘述了：</p>
 <p><img src="https://hexo.lcgui.cn/article/202405081106559.png" alt="image-20240508110649479"></p>
+<h3 id="遇到的BUG"><a href="#遇到的BUG" class="headerlink" title="遇到的BUG"></a>遇到的BUG</h3><h4 id="Maven依赖下载权限不足"><a href="#Maven依赖下载权限不足" class="headerlink" title="Maven依赖下载权限不足"></a>Maven依赖下载权限不足</h4><p>在构建项目的时候需要下载maven依赖，会出现如下的问题：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405081449833.png" alt="image-20240508144907786"></p>
+<p><img src="https://hexo.lcgui.cn/article/202405081449226.png" alt="image-20240508144921187"></p>
+<p>这个问题是由于你设置的maven本地仓库的权限问题。容器内部的权限等级没有这么高，而你如果是管理员创建的仓库文件夹，就会导致 容器内部下载的依赖无法写入导致问题。</p>
+<p>解决方案：直接在你的宿主机，设置本地仓库的权限，让其他人员也能写入即可。</p>
+<h4 id="构建Docker镜像权限不足"><a href="#构建Docker镜像权限不足" class="headerlink" title="构建Docker镜像权限不足"></a>构建Docker镜像权限不足</h4><p>使用DockerFile构建你的项目镜像的时候，报错提示：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405081601909.png" alt="image-20240508160111846"></p>
+<p>类似这种就是你的Jenkins容器中的Docker权限不足，因为之前的Docker是挂载进去的，容器呢不没有这么高的权限导致无法构建项目。</p>
+<p>解决方案：在你的宿主机内，设置docker.socket的权限。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chmod -R 777 /var/run/docker.sock</span><br></pre></td></tr></table></figure>
+
+<p>设置完再去运行你的流水线。</p>
+<p><img src="https://hexo.lcgui.cn/article/202405081604162.png" alt="image-20240508160400118"></p>
 ]]></content>
       <categories>
         <category>技术分享</category>
