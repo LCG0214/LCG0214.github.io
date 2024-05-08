@@ -111,7 +111,7 @@
 <p>2）根据查看到的镜像名称，拉取自己需要的镜像，通过命令：docker pull nginx</p>
 <p><img src="https://hexo.lcgui.cn/article/202404251624127.png" alt="image-20210731155856199"></p>
 <p>3）通过命令：docker images 查看拉取到的镜像</p>
-<p><img src="C:\Users\LCG\Desktop\自学资源\黑马\1、微服务开发框架SpringCloud+RabbitMQ+Docker+Redis+搜索+分布式微服务全技术栈课程\实用篇\学习资料\day03-Docker\讲义\assets\image-20210731155903037.png" alt="image-20210731155903037"></p>
+<p><img src="https://hexo.lcgui.cn/article/202405081128368.png" alt="image-20210731155903037"></p>
 <h3 id="案例2-保存、导入镜像"><a href="#案例2-保存、导入镜像" class="headerlink" title="案例2-保存、导入镜像"></a>案例2-保存、导入镜像</h3><p>需求：利用docker save将nginx镜像导出磁盘，然后再通过load加载回来</p>
 <p>1）利用docker xx –help命令查看docker save和docker load的语法</p>
 <p>例如，查看save命令用法，可以输入命令：</p>
