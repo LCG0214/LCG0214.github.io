@@ -700,7 +700,7 @@
 <h2 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h2><h3 id="Frp下载安装"><a href="#Frp下载安装" class="headerlink" title="Frp下载安装"></a>Frp下载安装</h3><p>打开<a href="https://github.com/fatedier/frp/releases">frp官网</a>自己选个版本下载就行了，打不开的话自己上点科技，因为是在github上面的。</p>
 <p>这里需要注意下：frp分为<code>服务端</code>和<code>客户端</code>服务端是放在你的服务器上面的，客户端时放在内网机器上的，当然下载的时候你要匹配自己系统就行了，linux就下载linux版本，windows就下载windows版本。</p>
 <p>我这里服务端是linux，客户端是windows的</p>
-<p><img src="C:\Users\LCG\AppData\Roaming\Typora\typora-user-images\image-20240527153818056.png" alt="image-20240527153818056"></p>
+<p><img src="https://hexo.lcgui.cn/article/202405271703157.png" alt="image-20240527153818056"></p>
 <p>下载完成后，linux的直接传到服务器上解压即可。windows也是解压就行了。</p>
 <h3 id="服务端配置"><a href="#服务端配置" class="headerlink" title="服务端配置"></a>服务端配置</h3><p>解压完成后文件如下：</p>
 <p><img src="https://hexo.lcgui.cn/article/202405271541561.png" alt="image-20240527154125529"></p>
@@ -768,7 +768,7 @@
 <p>买完以后，点击<code>我的隧道</code>，复制<code>authtoken</code>待会要用：</p>
 <p><img src="https://hexo.lcgui.cn/article/202405271640638.png" alt="image-20240527164031490"></p>
 <p>复制完，回到你的电脑创建一个文件夹，将你下载的<code>natapp.exe</code>文件放进去，同时再创建一个<code>config.ini</code>文件：</p>
-<p><img src="https://hexo.lcgui.cn/article/202405271641495.png" alt="image-20240527164151464"></p>
+<p><img src="https://hexo.lcgui.cn/article/202405271705133.png" alt="image-20240527164151464"></p>
 <p>其中<code>config.ini</code>中的内容是：</p>
 <figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="comment">#将本文件放置于natapp同级目录 程序将读取 [default] 段</span></span><br><span class="line"><span class="comment">#在命令行参数模式如 natapp -authtoken=xxx 等相同参数将会覆盖掉此配置</span></span><br><span class="line"><span class="comment">#命令行参数 -config= 可以指定任意config.ini文件</span></span><br><span class="line"><span class="section">[default]</span></span><br><span class="line"><span class="comment">#对应一条隧道的authtoken</span></span><br><span class="line"><span class="attr">authtoken</span>=这里粘贴你刚才复制的authtoken</span><br><span class="line">clienttoken=                    <span class="comment">#对应客户端的clienttoken,将会忽略authtoken,若无请留空,</span></span><br><span class="line"><span class="attr">log</span>=none                        <span class="comment">#log 日志文件,可指定本地文件, none=不做记录,stdout=直接屏幕输出 ,默认为none</span></span><br><span class="line"><span class="attr">loglevel</span>=ERROR                  <span class="comment">#日志等级 DEBUG, INFO, WARNING, ERROR 默认为 DEBUG</span></span><br><span class="line">http_proxy=                  <span class="comment">#代理设置 如 http://10.123.10.10:3128 非代理上网用户请务必留空</span></span><br></pre></td></tr></table></figure>
 
