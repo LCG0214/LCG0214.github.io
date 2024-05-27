@@ -680,6 +680,126 @@
       </tags>
   </entry>
   <entry>
+    <title>内网穿透入门使用</title>
+    <url>/2024/05/27/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E5%85%A5%E9%97%A8%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="内网穿透入门使用"><a href="#内网穿透入门使用" class="headerlink" title="内网穿透入门使用"></a>内网穿透入门使用</h1><h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><ul>
+<li><p>什么是内网穿透：</p>
+<p>首先我们对内网和外网这两个名词做个解释：</p>
+<p>1、内网：是内部建立的局域网络或办公网络；</p>
+<p>2、外网：是通过一个网关或网桥与其他网络系统连接，相对于自己的内网来说，其他网络系统称为外网。</p>
+<p>内网穿透简单来说就是将内网外网通过隧道打通,让内网的数据让外网可以获取。比如常用的办公室软件等，一般在办公室应用，通过拨号上网，没有公网IP，这样办公软件只有在办公室本地的局域网之内才能访问，用了内网穿透方案后，这些基于内网访问的办公室软件就可以在外网家里访问了。</p>
+</li>
+<li><p>如果不了解内网，公网这些概念的话，我感觉这篇文章也是看不懂，可以看看别人的文章先：<a href="https://blog.csdn.net/u010020099/article/details/82148798">内网、网关、公网IP的关系</a>， <a href="https://blog.csdn.net/brvs28856/article/details/100951364">一文读懂内网、公网和NAT</a>。</p>
+</li>
+</ul>
+<h2 id="穿透工具推荐"><a href="#穿透工具推荐" class="headerlink" title="穿透工具推荐"></a>穿透工具推荐</h2><p>这里推荐两款我自己用的：<code>frp</code>和<code>natapp</code>。</p>
+<p><strong>frp：</strong></p>
+<p>使用本款软件的话你需要本身有一台拥有公网ip的服务器才可以使用，因为这个软件要借助你自己的公网ip打通隧道将你内网的端口代理出去。可以用来打造堡垒机，跳板机等。</p>
+<p><strong>natapp：</strong></p>
+<p>这款白嫖党狂喜，因为有免费的额度，同时也不需要自己拥有服务器也可以使用，适合白嫖党。当然免费版功能上肯定是稍微拉跨点的，不过自己测试拿来玩什么的还都是没什么问题的。</p>
+<h2 id="Frp"><a href="#Frp" class="headerlink" title="Frp"></a>Frp</h2><h3 id="Frp下载安装"><a href="#Frp下载安装" class="headerlink" title="Frp下载安装"></a>Frp下载安装</h3><p>打开<a href="https://github.com/fatedier/frp/releases">frp官网</a>自己选个版本下载就行了，打不开的话自己上点科技，因为是在github上面的。</p>
+<p>这里需要注意下：frp分为<code>服务端</code>和<code>客户端</code>服务端是放在你的服务器上面的，客户端时放在内网机器上的，当然下载的时候你要匹配自己系统就行了，linux就下载linux版本，windows就下载windows版本。</p>
+<p>我这里服务端是linux，客户端是windows的</p>
+<p><img src="C:\Users\LCG\AppData\Roaming\Typora\typora-user-images\image-20240527153818056.png" alt="image-20240527153818056"></p>
+<p>下载完成后，linux的直接传到服务器上解压即可。windows也是解压就行了。</p>
+<h3 id="服务端配置"><a href="#服务端配置" class="headerlink" title="服务端配置"></a>服务端配置</h3><p>解压完成后文件如下：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271541561.png" alt="image-20240527154125529"></p>
+<p>其中这里面的<code>frpc</code>是客户端的启动程序，因为我们这里是做服务端的，所以这个没用，你可以选择保留或者直接删除。<code>frps</code>是服务端的启动程序，我们待会要用这个。</p>
+<p><code>toml</code>结尾的文件是对应的配置文件，如果你的版本比较落后的话应该是<code>ini</code>结尾的配置文件，新版的应该都改成<code>toml</code>结尾的文件了。</p>
+<p><strong>服务端配置：</strong></p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># frp监听的端口，默认是7000，可修改</span></span><br><span class="line"><span class="comment"># bindAddr = &quot;0.0.0.0&quot; # 绑定地址，0.0.0.0 表示监听所有地址</span></span><br><span class="line"><span class="attr">bindPort</span> = <span class="number">7000</span>  </span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启Dashboard用于管理和查看服务状态。Dashboard端口、用户名和密码，请改成更复杂的。</span></span><br><span class="line"><span class="attr">webServer.addr</span> = <span class="string">&quot;0.0.0.0&quot;</span></span><br><span class="line"><span class="attr">webServer.port</span> = <span class="number">7500</span></span><br><span class="line"><span class="attr">webServer.user</span> = <span class="string">&quot;登陆账号&quot;</span></span><br><span class="line"><span class="attr">webServer.password</span> = <span class="string">&quot;登陆密码&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 授权码，请改成更复杂的，这个token之后在客户端会用到</span></span><br><span class="line"><span class="attr">auth.method</span> = <span class="string">&quot;token&quot;</span></span><br><span class="line"><span class="attr">auth.token</span> = <span class="string">&quot;这里可以自己生成一个密钥(多少位自己随意)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 去除访问限速</span></span><br><span class="line"><span class="attr">transport.tcpMux</span> = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># frp日志配置</span></span><br><span class="line"><span class="attr">log.to</span> = <span class="string">&quot;/export/frp/logs/frps.log&quot;</span>  <span class="comment"># 日志路径按照自己的需求更改</span></span><br><span class="line"><span class="attr">log.level</span> = <span class="string">&quot;info&quot;</span></span><br><span class="line"><span class="attr">log.maxDays</span> = <span class="number">3</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果对这些参数有些疑问什么的，可以自行到<a href="https://gofrp.org/zh-cn/">手册官网</a>自行查看。</p>
+<h3 id="启动服务端"><a href="#启动服务端" class="headerlink" title="启动服务端"></a>启动服务端</h3><p>如果你想使用<code>systemctl</code>来控制frp：</p>
+<ol>
+<li><strong>如果您的 Linux 服务器上尚未安装 systemd，可以使用包管理器如 <code>yum</code>（适用于 CentOS&#x2F;RHEL）或 <code>apt</code>（适用于 Debian&#x2F;Ubuntu）来安装它：</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 yum 安装 systemd（CentOS/RHEL）</span></span><br><span class="line">yum install systemd</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">使用 apt 安装 systemd（Debian/Ubuntu）</span></span><br><span class="line">apt install systemd</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>使用文本编辑器 (如 vim) 在 <code>/etc/systemd/system</code> 目录下创建一个 <code>frps.service</code> 文件，用于配置 frps 服务。</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/systemd/system/frps.service</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>写入内容</strong></li>
+</ol>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="section">[Unit]</span></span><br><span class="line"><span class="comment"># 服务名称，可自定义</span></span><br><span class="line"><span class="attr">Description</span> = frp server</span><br><span class="line"><span class="attr">After</span> = network.target syslog.target</span><br><span class="line"><span class="attr">Wants</span> = network.target</span><br><span class="line"></span><br><span class="line"><span class="section">[Service]</span></span><br><span class="line"><span class="attr">Type</span> = simple</span><br><span class="line"><span class="comment"># 启动frps的命令，需修改为您的frps的安装路径</span></span><br><span class="line"><span class="attr">ExecStart</span> = 你的frpc的路径 -c 你的frps.toml的路径</span><br><span class="line"></span><br><span class="line"><span class="section">[Install]</span></span><br><span class="line"><span class="attr">WantedBy</span> = multi-user.target</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>使用 systemd 命令管理 frps 服务</strong></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 启动frp</span><br><span class="line">sudo systemctl start frps</span><br><span class="line"># 停止frp</span><br><span class="line">sudo systemctl stop frps</span><br><span class="line"># 重启frp</span><br><span class="line">sudo systemctl restart frps</span><br><span class="line"># 查看frp状态</span><br><span class="line">sudo systemctl status frps</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>设置 frps 开机自启动</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo systemctl enable frps</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202405271606621.png" alt="image-20240527160618496"></p>
+<p>这样就是启动好了。</p>
+<h3 id="配置客户端"><a href="#配置客户端" class="headerlink" title="配置客户端"></a>配置客户端</h3><p><img src="https://hexo.lcgui.cn/article/202405271607453.png" alt="image-20240527160727421"></p>
+<p>同样，解压出来还是这些熟悉的文件，<strong>注意：不要直接点击exe文件启动，要使用cmd命令启动。</strong></p>
+<p>如下是客户端的配置：</p>
+<figure class="highlight toml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 服务端公网IP、监听端口bind_port</span></span><br><span class="line"><span class="attr">serverAddr</span> = <span class="string">&quot;43.139.50.156&quot;</span></span><br><span class="line"><span class="attr">serverPort</span> = <span class="number">7000</span> <span class="comment">#这里跟服务端必须一样</span></span><br><span class="line"></span><br><span class="line"><span class="attr">webServer.addr</span> = <span class="string">&quot;0.0.0.0&quot;</span></span><br><span class="line"><span class="attr">webServer.port</span> = <span class="number">7500</span> </span><br><span class="line"><span class="attr">webServer.user</span> = <span class="string">&quot;登陆账号&quot;</span></span><br><span class="line"><span class="attr">webServer.password</span> = <span class="string">&quot;登陆密码&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 授权码</span></span><br><span class="line"><span class="attr">auth.method</span> = <span class="string">&quot;token&quot;</span></span><br><span class="line"><span class="attr">auth.token</span> = <span class="string">&quot;这里可以自己生成一个密钥(多少位自己随意)&quot;</span></span><br><span class="line"><span class="comment"># 设置心跳</span></span><br><span class="line"><span class="attr">auth.additionalScopes</span> = [<span class="string">&quot;HeartBeats&quot;</span>]</span><br><span class="line"><span class="comment"># 去除访问限速</span></span><br><span class="line"><span class="attr">transport.tcpMux</span> = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># frp日志配置</span></span><br><span class="line"><span class="attr">log.to</span> = <span class="string">&quot;.logs/frpc.log&quot;</span></span><br><span class="line"><span class="attr">log.level</span> = <span class="string">&quot;info&quot;</span></span><br><span class="line"><span class="attr">log.maxDays</span> = <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="section">[[proxies]]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;代理的名称&quot;</span></span><br><span class="line"><span class="attr">type</span> = <span class="string">&quot;tcp&quot;</span></span><br><span class="line"><span class="attr">localIP</span> = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line"><span class="attr">localPort</span> = <span class="number">51602</span> <span class="comment"># 内网需要代理的端口</span></span><br><span class="line"><span class="attr">remotePort</span> = <span class="number">24524</span> <span class="comment"># 访问服务端的端口</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解释下上面的这两个端口什么意思 localPort 是你内网需要被代理的端口 ，remotePort是你服务端要访问的端口， 实际上 比如你服务端的ip地址是 1.1.1.1 客户端的地址是192.168.101.101，那么我访问 1.1.1.1:24524就实际访问到的是你192.168.101.101:51602</span></span><br><span class="line"></span><br><span class="line"><span class="section">[[proxies]]</span></span><br><span class="line"><span class="attr">name</span> = <span class="string">&quot;代理的名称2&quot;</span></span><br><span class="line"><span class="attr">type</span> = <span class="string">&quot;tcp&quot;</span></span><br><span class="line"><span class="attr">localIP</span> = <span class="string">&quot;127.0.0.1&quot;</span></span><br><span class="line"><span class="attr">localPort</span> = <span class="number">51601</span></span><br><span class="line"><span class="attr">remotePort</span> = <span class="number">24525</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># name 为服务名称，下方解释：访问frp服务端的2288端口时，等同于通过中转服务器访问127.0.0.1的22端口。</span></span><br><span class="line"><span class="comment"># type 为连接的类型，此处为tcp</span></span><br><span class="line"><span class="comment"># localIP 为中转客户端实际访问的IP</span></span><br><span class="line"><span class="comment"># localPort 为目标端口</span></span><br><span class="line"><span class="comment"># remotePort 为远程端口，记得服务端的防火墙打开这个端口</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动客户端"><a href="#启动客户端" class="headerlink" title="启动客户端"></a>启动客户端</h3><p>使用cmd进入到frp的目录，使用如下命令启动，不可以直接点击exe执行文件启动。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">frpc.exe -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202405271618022.png"></p>
+<p>如果你嫌麻烦，每次都要使用命令启动，你可以将此命令封到<code>bat</code>文件中，只需要启动bat文件即可</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271623241.png" alt="image-20240527162332199"></p>
+<p>你想要关闭的时候最好是采用<code>ctrl+c</code>的按键方式关闭，最好不要直接点击关闭。</p>
+<h3 id="效果查看"><a href="#效果查看" class="headerlink" title="效果查看"></a>效果查看</h3><p>启动后会被阻塞，就是启动成功了。你现在就可以到你的可视化界面查看了，就是默认7500端口的那个。</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271620373.png" alt="image-20240527162012320"></p>
+<p>这里就能看到效果了，当然服务端那边也可以查看了，如下图：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271621832.png" alt="image-20240527162133777"></p>
+<p>这样就是成功了，你的内网能够被所有人访问了。</p>
+<p><strong>堡垒机&#x2F;跳板机：</strong></p>
+<p>这里稍微讲一下堡垒机和跳板机就行了，跳板机属于堡垒机的一种，你没有公网的服务器是没办法直接被访问的，所以需要一台有公网的作为跳板，使用frp，将内网服务器的<code>22</code>端口代理出去，这样就能通过跳板操作内网服务器了。</p>
+<h2 id="NATApp"><a href="#NATApp" class="headerlink" title="NATApp"></a>NATApp</h2><h3 id="NATApp下载安装"><a href="#NATApp下载安装" class="headerlink" title="NATApp下载安装"></a>NATApp下载安装</h3><p>直接到<a href="https://natapp.cn/">NatApp官网</a>进行下载，一般是内网的客户端下载，所以我这里就是windows版本了：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271630045.png" alt="image-20240527163029995"></p>
+<p>下载完成后，直接解压就行，里面只有一个exe执行文件。</p>
+<h3 id="NATApp配置"><a href="#NATApp配置" class="headerlink" title="NATApp配置"></a>NATApp配置</h3><p>仍然是打开natapp的官网，注册一个账号，如果已有账号直接登录即可。</p>
+<p>登陆后到达控制台：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271637645.png" alt="image-20240527163718447"></p>
+<p>购买一个免费的隧道：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271639713.png" alt="image-20240527163920656"></p>
+<p>买完以后，点击<code>我的隧道</code>，复制<code>authtoken</code>待会要用：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271640638.png" alt="image-20240527164031490"></p>
+<p>复制完，回到你的电脑创建一个文件夹，将你下载的<code>natapp.exe</code>文件放进去，同时再创建一个<code>config.ini</code>文件：</p>
+<p><img src="https://hexo.lcgui.cn/article/202405271641495.png" alt="image-20240527164151464"></p>
+<p>其中<code>config.ini</code>中的内容是：</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="comment">#将本文件放置于natapp同级目录 程序将读取 [default] 段</span></span><br><span class="line"><span class="comment">#在命令行参数模式如 natapp -authtoken=xxx 等相同参数将会覆盖掉此配置</span></span><br><span class="line"><span class="comment">#命令行参数 -config= 可以指定任意config.ini文件</span></span><br><span class="line"><span class="section">[default]</span></span><br><span class="line"><span class="comment">#对应一条隧道的authtoken</span></span><br><span class="line"><span class="attr">authtoken</span>=这里粘贴你刚才复制的authtoken</span><br><span class="line">clienttoken=                    <span class="comment">#对应客户端的clienttoken,将会忽略authtoken,若无请留空,</span></span><br><span class="line"><span class="attr">log</span>=none                        <span class="comment">#log 日志文件,可指定本地文件, none=不做记录,stdout=直接屏幕输出 ,默认为none</span></span><br><span class="line"><span class="attr">loglevel</span>=ERROR                  <span class="comment">#日志等级 DEBUG, INFO, WARNING, ERROR 默认为 DEBUG</span></span><br><span class="line">http_proxy=                  <span class="comment">#代理设置 如 http://10.123.10.10:3128 非代理上网用户请务必留空</span></span><br></pre></td></tr></table></figure>
+
+<p>如果对配置文件有疑问，可以了解 <a href="https://natapp.cn/article/config_ini">官方配置</a>。</p>
+<h3 id="启动NATApp"><a href="#启动NATApp" class="headerlink" title="启动NATApp"></a>启动NATApp</h3><p>直接点击<code>natapp.exe</code>执行即可，他会自动读取配置文件。</p>
+<h2 id="使用途径"><a href="#使用途径" class="headerlink" title="使用途径"></a>使用途径</h2><p><strong>场景一：企业远程办公</strong></p>
+<p>企业用户购买了企业管理系统、财务系统、人力资源系统，分公司与总部不在同一城市，分公司需要远程访问总部系统；</p>
+<p><strong>场景二：开发人员远程调试</strong></p>
+<p> 放在家里的树莓派,服务器等,需要远程ssh管理,这样打通服务器的22端口即可远程通过ssh操作服务器了.</p>
+<p><strong>场景三：数据远程同步</strong></p>
+<p>一些企业内部数据库,由于安全等原因,不愿意放到云服务器上,可以将数据库放到办公室本地,然后通过天联传输通道传输，这样既保证安全,又保证公网可以正常访问</p>
+<p><strong>场景四：远程监控</strong></p>
+<p>一些设备的运行监控信息，可以远程监控管理,可以方便的管理监控各个设备的运行情况.</p>
+<p><strong>场景五：远程联机游戏</strong></p>
+<p> 这里我简单说一下我的世界游戏联机，我的世界联机的话，创建完以后，开放联机的时候会产生一个端口，无论你是用frp还是natapp都可以使用的，你的朋友输入如果是frp的话就输入服务端的ip+端口，如果是natapp的话会产生一个url完事就能联机了。</p>
+<p><strong>场景六：文件远程共享</strong></p>
+<p>FTP共享文件、NAS文件存储，可以通过天联实现远程共享、下载、上传；</p>
+<p><strong>其他使用途径</strong></p>
+<p>如若还有其他的使用途径，靠大家自己发现。</p>
+]]></content>
+      <categories>
+        <category>技术分享</category>
+        <category>自学之路</category>
+      </categories>
+      <tags>
+        <tag>必看</tag>
+        <tag>网络</tag>
+        <tag>服务器</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>易班答题助手使用手册</title>
     <url>/2024/03/22/%E6%98%93%E7%8F%AD%E7%AD%94%E9%A2%98%E5%8A%A9%E6%89%8B%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</url>
     <content><![CDATA[<h1 id="易班答题助手使用手册"><a href="#易班答题助手使用手册" class="headerlink" title="易班答题助手使用手册"></a>易班答题助手使用手册</h1><h4 id="开发背景"><a href="#开发背景" class="headerlink" title="开发背景"></a>开发背景</h4><blockquote>
