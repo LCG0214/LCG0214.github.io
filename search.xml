@@ -1,6 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Java跨Docker容器备份数据库数据</title>
+    <url>/2024/05/25/Java%E8%B7%A8Docker%E5%AE%B9%E5%99%A8%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E5%BA%93%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<h2 id="Java跨Docker容器备份数据库数据"><a href="#Java跨Docker容器备份数据库数据" class="headerlink" title="Java跨Docker容器备份数据库数据"></a>Java跨Docker容器备份数据库数据</h2><h3 id="前置背景"><a href="#前置背景" class="headerlink" title="前置背景"></a>前置背景</h3><ul>
+<li>在我们的开发部署场景中，通常多数使用Docker进行部署。当你的数据库和项目都使用Docker进行部署，此时我想要通过Java程序进行数据备份，那么就无法实现，因为是两个相互独立的容器。</li>
+<li>在本篇文章中，我提供我的解决方法仅供参考。</li>
+</ul>
+<h3 id="思路整理"><a href="#思路整理" class="headerlink" title="思路整理"></a>思路整理</h3><ol>
+<li>因为你的两个Docker容器是相互独立的，你的Java容器要操作MySQL，所以你的Java容器要具备可以执行MySQL命令的能力</li>
+<li>但是，MySQL和Java是隔离的，无法直接使用MySQL命令备份，所以就想到使用docker的exec命令去操作MySQL容器让他备份。</li>
+<li>备份完事以后，备份的文件还在MySQL容器中，宿主机也看不到想要的备份的SQL脚本，所以MySQL容器要挂载数据卷，把备份的SQL脚本备份出来。</li>
+</ol>
+<h3 id="编写备份脚本"><a href="#编写备份脚本" class="headerlink" title="编写备份脚本"></a>编写备份脚本</h3><p>本脚本我是从别人那里拿的，根据自己的需求修改即可</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">备份路径</span></span><br><span class="line">BACKUP=/backups/mysql</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">当前时间</span></span><br><span class="line">DATETIME=$(date +%Y-%m-%d)</span><br><span class="line">echo &quot;===== 备份开始 =====&quot;</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">数据库名称</span></span><br><span class="line">DATABASE=你的数据库名</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">数据库地址</span></span><br><span class="line">HOST=数据库地址</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">数据库用户名</span></span><br><span class="line">DB_USER=用户名</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">数据库密码</span></span><br><span class="line">DB_PW=密码</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">创建备份目录</span></span><br><span class="line">[ ! -d &quot;$&#123;BACKUP&#125;/$DATABASE&quot; ] &amp;&amp; mkdir -p &quot;$&#123;BACKUP&#125;/$DATABASE&quot;</span><br><span class="line">echo &quot;备份文件存放于$&#123;BACKUP&#125;/$DATABASE/$DATABASE-$DATETIME.sql&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">开始备份</span></span><br><span class="line">mysqldump -h $&#123;HOST&#125; -u$&#123;DB_USER&#125; -p$&#123;DB_PW&#125;  $&#123;DATABASE&#125; &gt; $&#123;BACKUP&#125;/$DATABASE/$DATABASE-$DATETIME.sql</span><br><span class="line"> </span><br><span class="line">echo &quot;===== 导出成功，开始传输 =====&quot;</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">压缩成tar.gz包</span></span><br><span class="line">cd $BACKUP</span><br><span class="line">tar -zcvf $DATABASE.tar.gz $DATABASE</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">备份到服务器B</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">scp <span class="variable">$DATABASE</span>-<span class="variable">$DATETIME</span>.sql root@ip:/home/mysqlBackup</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除备份目录  如果取消注释此命令 会删除sql脚本文件 只保留打包完成后的压缩包</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">rm</span> -rf <span class="variable">$&#123;BACKUP&#125;</span>/<span class="variable">$DATABASE</span>/<span class="variable">$DATETIME</span></span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">删除10天（不含）前备份的数据，这边可以自行更改</span></span><br><span class="line">find $BACKUP -mtime +10 -name &quot;*.tar.gz&quot; -exec rm -rf &#123;&#125; \;</span><br><span class="line">echo &quot;===== 数据库备份到服务器成功 =====&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="容器启动"><a href="#容器启动" class="headerlink" title="容器启动"></a>容器启动</h3><p>这里如果你的容器已经启动了也没关系，直接跑一遍docker命令即可。</p>
+<p><strong>Java：</strong></p>
+<p>这里最主要的是数据卷的绑定，因为你的Java容器需要可以使用docker命令，所以你得把docker挂载进去。其他的根据自己的需求修改就行。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">-v $JOB_NAME-data:/tmp \</span><br><span class="line">--net=host \</span><br><span class="line">-e PARAMS=&quot;--spring.profiles.active=prod&quot; \</span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">-v /usr/bin/docker:/usr/bin/docker \</span><br><span class="line">--name $JOB_NAME $JOB_NAME</span><br></pre></td></tr></table></figure>
+
+<p><strong>MySQL：</strong></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:5.7</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-conf:/etc/mysql/conf.d</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-data:/var/lib/mysql</span></span><br><span class="line">      <span class="comment"># 数据库备份脚本存储路径，映射进去：这里是把你准备的备份脚本从宿主机映射到MySQL容器中，让他可以执行</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/export/shell/mysql:/home/shell/mysql</span></span><br><span class="line">      <span class="comment"># 数据库的备份文件挂在地址：这里是MySQL备份完成后，将备份文件从容器中映射到宿主机中</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/export/backups/mysql/57:/backups/mysql</span></span><br><span class="line">      <span class="comment"># 将宿主机的时区挂载到容器：不挂载可能导致容器内和宿主机的时间不一致，导致备份脚本文件名称的日期出错</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/etc/localtime:/etc/localtime:ro</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">MYSQL_ROOT_PASSWORD=自行设置你的数据库密码</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3306:3306&quot;</span></span><br><span class="line">    <span class="attr">mem_limit:</span> <span class="string">512m</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">mysql-conf:</span></span><br><span class="line">  <span class="attr">mysql-data:</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="检验效果"><a href="#检验效果" class="headerlink" title="检验效果"></a>检验效果</h3><h4 id="Java容器"><a href="#Java容器" class="headerlink" title="Java容器"></a>Java容器</h4><ol>
+<li>先进入到你的Java容器中：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker exec -it Java容器名 bash</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>进来以后可以直接使用下面的命令，查看是否挂载Docker成功：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker -v</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>出现版本号即为成功</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202405271047547.png" alt="image-20240527104710429"></p>
+<ol start="4">
+<li>如果你出现了<code>权限不足</code>的问题，你需要退回到你的宿主机内，给<code>docker.sock</code>进行权限修改，没有的话直接省略此步骤即可：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">chmod -R 777 /var/run/docker.sock</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>在<code>Java容器</code>中查看你的MySQL版本，如果正常出现版本号基本就没什么问题了：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">注意这里没有 -it 参数</span></span><br><span class="line">docker exec mysql mysql -V</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202405271117041.png" alt="image-20240527111754983"></p>
+<h4 id="MySQL容器"><a href="#MySQL容器" class="headerlink" title="MySQL容器"></a>MySQL容器</h4><ol>
+<li>进入MySQL容器：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker exec -it mysql bash</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>找到你自己设置的挂载备份脚本的路径，查看脚本是否挂载成功：</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202405271125655.png" alt="image-20240527112516583"></p>
+<ol start="3">
+<li>你可以直接执行下你的脚本，看下效果</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sh 你的脚本名称</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202405271133632.png" alt="image-20240527113328530"></p>
+<ol start="4">
+<li>可以到你的备份目录查看下备份的效果，这里有其他的是因为我的程序设置的每七天自动备份一次：</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202405271135712.png" alt="image-20240527113507659"></p>
+<ol start="5">
+<li>到你的宿主机挂载的脚本备份路径查看：</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202405271138384.png" alt="image-20240527113846237"></p>
+<p><img src="https://hexo.lcgui.cn/article/202405271139087.png" alt="image-20240527113918053"></p>
+<ol start="6">
+<li>这里还是有一个可能存在的坑：</li>
+</ol>
+<blockquote>
+<p>如果你发现你备份的数据SQL脚本，分明是18号备份的但是SQL的脚本文件的名称上却是17号，这是因为：你的数据库备份脚本中，有一个参数是获取当前系统的时间，那么就说明你的MySQL容器中的时间跟宿主机的时间不一致，运行容器时没有对时区进行挂载数据卷。</p>
+</blockquote>
+<p><img src="https://hexo.lcgui.cn/article/202405271144494.png" alt="image-20240527114446397"></p>
+<h3 id="Java代码执行备份"><a href="#Java代码执行备份" class="headerlink" title="Java代码执行备份"></a>Java代码执行备份</h3><p>代码执行这里我是使用了<code>xxl-job</code>定时任务去做，每七天备份一次，其他的实现方式可以根据你们自己的需求去进行更改。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@XxlJob(&quot;mysqlBackup&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">mysqlBackup</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="comment">//获取Runtime实例</span></span><br><span class="line">    <span class="type">Runtime</span> <span class="variable">runtime</span> <span class="operator">=</span> Runtime.getRuntime();</span><br><span class="line">    <span class="comment">// 数据库备份命令</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">command</span> <span class="operator">=</span> <span class="string">&quot;docker exec mysql sh /home/shell/mysql/course_compete.sh&quot;</span>;</span><br><span class="line">    <span class="comment">//获取命令所得的缓冲流结果</span></span><br><span class="line">    <span class="type">BufferedReader</span> <span class="variable">bufferedReader</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="comment">// 执行命令</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">Process</span> <span class="variable">exec</span> <span class="operator">=</span> runtime.exec(command);</span><br><span class="line">        <span class="comment">//初始化缓冲阅读器</span></span><br><span class="line">        bufferedReader = <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(exec.getInputStream()));</span><br><span class="line">        <span class="comment">// 逐行读取输出</span></span><br><span class="line">        String line;</span><br><span class="line">        <span class="comment">//此时就可以对获取的结果in进行操作了，可以使用in.readline()逐步获取每一行的结果内容</span></span><br><span class="line">        <span class="keyword">while</span> ((line = bufferedReader.readLine()) != <span class="literal">null</span>)&#123;</span><br><span class="line">            log.info(<span class="string">&quot;获取到的行数据：&#123;&#125;&quot;</span>, line);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        log.error(<span class="string">&quot;竞赛模块数据库备份异常&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">    &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(bufferedReader != <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                bufferedReader.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>技术分享</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>运维</tag>
+        <tag>必看</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringCloud微服务之Docker篇</title>
     <url>/2024/04/25/SpringCloud%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B9%8BDocker%E7%AF%87/</url>
     <content><![CDATA[<h1 id="SpringCloud微服务之Docker篇"><a href="#SpringCloud微服务之Docker篇" class="headerlink" title="SpringCloud微服务之Docker篇"></a>SpringCloud微服务之Docker篇</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>本片仅作使用手册查询时使用，想系统学习请移步<a href="https://www.bilibili.com/video/BV1LQ4y127n4?p=43&vd_source=e8f23ce779fe95d50e5e893a9b32eaa9">SpringCloud之Docker篇</a>。</p>
@@ -472,9 +564,9 @@
         <category>自学之路</category>
       </categories>
       <tags>
-        <tag>自学</tag>
         <tag>Java</tag>
         <tag>运维</tag>
+        <tag>自学</tag>
       </tags>
   </entry>
   <entry>
