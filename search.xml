@@ -1,6 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>JVM入门到实战（一）</title>
+    <url>/2024/07/02/JVM%E5%85%A5%E9%97%A8%E5%88%B0%E5%AE%9E%E6%88%98%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="JVM入门到实战（一）"><a href="#JVM入门到实战（一）" class="headerlink" title="JVM入门到实战（一）"></a>JVM入门到实战（一）</h1><h2 id="文章介绍"><a href="#文章介绍" class="headerlink" title="文章介绍"></a>文章介绍</h2><p>本篇文章是整理自学的知识点进行记录，我自学的课程是黑马程序员的<a href="https://www.bilibili.com/video/BV1r94y1b7eS/?spm_id_from=333.999.0.0">JVM课程</a>。想学习的话可自行到课程学习。</p>
+<h2 id="JVM介绍"><a href="#JVM介绍" class="headerlink" title="JVM介绍"></a>JVM介绍</h2><ul>
+<li><p>JVM 本质上是一个运行在计算机上的程序，他的职责是运行Java字节码文件。</p>
+</li>
+<li><p>你编写的Java代码，经过编译后产生<code>.class</code>的字节码文件（包含字节码指令），然后再JVM上运行，由JVM解释成机器语码交给计算机执行</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031030182.png" alt="image-20240703102503894"></p>
+</li>
+<li><p>JVM的功能：</p>
+<ol>
+<li><p>解释和运行： 对字节码文件中的指令， 实时的解释成机器码， 让计算机执行</p>
+</li>
+<li><p>内存管理： 自动为对象、方法等分配内存，自动垃圾回收机制回收不再使用的对象</p>
+</li>
+<li><p>即时编译：热点代码有的优化，提升效率（主要是为了支持跨平台特性）</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031038971.png" alt="image-20240703103806909"></p>
+</li>
+</ol>
+</li>
+<li><p>JVM的组成：类加载器、运行时数据区域、执行引擎</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031042998.png" alt="image-20240703104236935"></p>
+</li>
+</ul>
+<h2 id="字节码文件介绍"><a href="#字节码文件介绍" class="headerlink" title="字节码文件介绍"></a>字节码文件介绍</h2><h3 id="字节码文件的组成"><a href="#字节码文件的组成" class="headerlink" title="字节码文件的组成"></a>字节码文件的组成</h3><p><img src="https://hexo.lcgui.cn/article/202407031114466.png" alt="image-20240703104900962"></p>
+<ol>
+<li><p>基本信息：包括魔数（CAFEBABE）、字节码文件的版本号(1.8对应51)、访问标识符、父类、接口等</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031114203.png" alt="image-20240703111452167"></p>
+</li>
+<li><p>常量池： 包括字符串常量、类和接口名、字段名主要在字节码指令中使用</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031115886.png" alt="image-20240703111532857"></p>
+</li>
+<li><p>字段：当前类或接口的字段信息</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031115728.png" alt="image-20240703111559700"></p>
+</li>
+<li><p>方法：当前类或接口声明的方法信息字节码指令</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031119731.png" alt="image-20240703111919679"></p>
+</li>
+<li><p>属性：类的属性，比如源码的文件名内部类类的列表等</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031117229.png" alt="image-20240703111715204"></p>
+</li>
+</ol>
+<h3 id="字节码文件查看工具："><a href="#字节码文件查看工具：" class="headerlink" title="字节码文件查看工具："></a>字节码文件查看工具：</h3><ol>
+<li>jclasslib应用程序：点击[这里](<a href="https://github.com/ingokegel/jclasslib/releases">Releases · ingokegel&#x2F;jclasslib (github.com)</a>)前往下载，因为是在GitHub上面需要自己用点魔法</li>
+<li>jclasslib插件：Idea工具直接下载对应插件即可</li>
+</ol>
+<h2 id="类的生命周期"><a href="#类的生命周期" class="headerlink" title="类的生命周期"></a>类的生命周期</h2><p>类的生命周期可以粗略分为<code>5个阶段</code>：<mark class="hl-label default">加载</mark> 、<mark class="hl-label default">连接</mark> 、<mark class="hl-label default">初始化</mark> 、<mark class="hl-label default">使用</mark> 、<mark class="hl-label default">卸载</mark> 。</p>
+<p>细致可以分为<code>7个阶段</code>：将五个阶段中的<mark class="hl-label default">连接</mark> 阶段，进行细分为三个阶段：<mark class="hl-label default">验证</mark> 、<mark class="hl-label default">准备</mark> 、<mark class="hl-label default">解析</mark> 。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031459831.png" alt="image-20240703145933770"></p>
+<h3 id="加载阶段"><a href="#加载阶段" class="headerlink" title="加载阶段"></a>加载阶段</h3><ol>
+<li><p>加载(Loading)阶段第一步是类加载器根据类的全限定名通过不同的渠道以二进制流的方式获取字节码信息。 程序员可以使用Java代码拓展的不同的渠道。</p>
+</li>
+<li><p>类加载器在加载完类之后，Java虚拟机会将字节码中的信息保存到方法区中。生成一个InstanceKlass对象，保存类的所有信息，里边还包含实现特定功能比如多态的信息。</p>
+</li>
+<li><p>Java虚拟机还会在堆中生成一份与方法区中数据类似的java.lang.Class对象。 作用是在Java代码中去获取类的信息以及存储静态字段的数据（JDK8及之后）。</p>
+<p><img src="C:\Users\LCG\AppData\Roaming\Typora\typora-user-images\image-20240703150158978.png" alt="image-20240703150158978"></p>
+</li>
+</ol>
+<h3 id="连接阶段"><a href="#连接阶段" class="headerlink" title="连接阶段"></a>连接阶段</h3><h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p><img src="https://hexo.lcgui.cn/article/202407031503242.png" alt="image-20240703150319207"></p>
+<p>连接（Linking）阶段的第一个环节是验证，验证的主要目的是检测Java字节码文件是否遵守了《Java虚拟机规 范》中的约束。这个阶段一般不需要程序员参与。主要包含如下四部分：</p>
+<ol>
+<li><p>文件格式验证，比如文件是否以0xCAFEBABE开头，主次版本号是否满足当前Java虚拟机版本要求。</p>
+</li>
+<li><p>元信息验证，例如类必须有父类（super不能为空）。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031504650.png" alt="image-20240703150452624"></p>
+</li>
+<li><p>验证程序执行指令的语义，比如方法内的指令执行中跳转到不正确的位置。</p>
+</li>
+<li><p>符号引用验证，例如是否访问了其他类中private的方法等。</p>
+</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202407031506061.png" alt="image-20240703150633008"></p>
+<h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><span class='p red'>注意：本章涉及到的内存结构只讨论JDK8及之后的版本，8之前的版本后续章节详述。</span>
+
+<ol>
+<li><p>准备阶段为静态变量（static）分配内存并设置初始值。这个阶段只会分配初始值，并不会给赋值，赋值需要在初始化阶段才会操作</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031513458.png" alt="image-20240703151327411"></p>
+</li>
+</ol>
+<p>以下是一些类型的初始值：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031514613.png" alt="image-20240703151452567"></p>
+<ol start="2">
+<li><p>final修饰的基本数据类型的静态变量，准备阶段直接会将代码中的值进行赋值。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031516375.png" alt="image-20240703151618334"></p>
+</li>
+</ol>
+<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><ol>
+<li><p>解析阶段主要是将常量池中的符号引用替换为直接引用（符号引用就是在字节码文件中使用编号来访问常量池中的内容）。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031517350.png" alt="image-20240703151747315"></p>
+<p>直接引用不在使用编号，而是使用内存中地址进行访问具体的数据。</p>
+</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202407031518490.png" alt="image-20240703151823456"></p>
+<h3 id="初始化阶段"><a href="#初始化阶段" class="headerlink" title="初始化阶段"></a>初始化阶段</h3><ul>
+<li><p>初始化阶段会执行静态代码块中的代码，并为静态变量赋值。</p>
+</li>
+<li><p>初始化阶段会执行字节码文件中clinit部分的字节码指令。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031520373.png" alt="image-20240703152007328"></p>
+<p>字节码指令的过程如下：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031521284.png" alt="image-20240703152115240"></p>
+</li>
+<li><p>以下几种方式会导致类的初始化：</p>
+<ol>
+<li>访问一个类的静态变量或者静态方法，注意变量是final修饰的并且等号右边是常量不会触发初始化。 </li>
+<li>调用Class.forName(String className)。 </li>
+<li>new一个该类的对象时。 </li>
+<li>执行Main方法的当前类。</li>
+</ol>
+</li>
+<li><p>下面有几个测试题目</p>
+<p>第一个：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031625341.png" alt="image-20240703162511288"></p>
+<p>第二个：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031625699.png" alt="image-20240703162547642"></p>
+</li>
+<li><p>clinit指令在特定情况下不会出现，比如：如下几种情况是不会进行初始化指令执行的。</p>
+<ol>
+<li><p>无静态代码块且无静态变量赋值语句。 </p>
+</li>
+<li><p>有静态变量的声明，但是没有赋值语句。 </p>
+</li>
+<li><p>静态变量的定义使用final关键字，这类变量会在准备阶段直接进行初始化。</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031627348.png"></p>
+</li>
+</ol>
+</li>
+<li><p>直接访问父类的静态变量，不会触发子类的初始化。</p>
+</li>
+<li><p>子类的初始化clinit调用之前，会先调用父类的clinit初始化方法。</p>
+<p>下面是例题：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031629627.png" alt="image-20240703162905582"></p>
+<p>把new B02()去掉：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031629401.png" alt="image-20240703162943360"></p>
+<p>另外两个关于初始化的练习题：</p>
+<p>第一题：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031635614.png" alt="image-20240703163501570"></p>
+<p>第二题：</p>
+<p><img src="https://hexo.lcgui.cn/article/202407031635617.png" alt="image-20240703163525574"></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>自学之路</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java跨Docker容器备份数据库数据</title>
     <url>/2024/05/25/Java%E8%B7%A8Docker%E5%AE%B9%E5%99%A8%E5%A4%87%E4%BB%BD%E6%95%B0%E6%8D%AE%E5%BA%93%E6%95%B0%E6%8D%AE/</url>
     <content><![CDATA[<h2 id="Java跨Docker容器备份数据库数据"><a href="#Java跨Docker容器备份数据库数据" class="headerlink" title="Java跨Docker容器备份数据库数据"></a>Java跨Docker容器备份数据库数据</h2><h3 id="前置背景"><a href="#前置背景" class="headerlink" title="前置背景"></a>前置背景</h3><ul>
