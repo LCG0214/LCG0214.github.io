@@ -981,6 +981,83 @@
       </tags>
   </entry>
   <entry>
+    <title>宿主机与虚拟器之间的代理</title>
+    <url>/2024/11/10/%E5%AE%BF%E4%B8%BB%E6%9C%BA%E4%B8%8E%E8%99%9A%E6%8B%9F%E5%99%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<h1 id="宿主机与虚拟器之间的代理"><a href="#宿主机与虚拟器之间的代理" class="headerlink" title="宿主机与虚拟器之间的代理"></a>宿主机与虚拟器之间的代理</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于公司vpn使用时，需要强制安装360杀毒，我不想装在宿主机中，所以研究了一下虚拟机中使用vpn连接公司网络，宿主机使用虚拟机中的代理，进而宿主机中也可以使用公司网络。</p>
+<h2 id="准备工具"><a href="#准备工具" class="headerlink" title="准备工具"></a>准备工具</h2><ol>
+<li>EasyConnect VPN连接工具（非必须，我们公司使用的是这个）</li>
+<li>Vmware虚拟机（必须，其他虚拟机也可）</li>
+<li>Proxifier代理工具（非必须）</li>
+<li>ccproxy 正向代理工具（必须，其他正代工具也可）</li>
+</ol>
+<h2 id="思路说明"><a href="#思路说明" class="headerlink" title="思路说明"></a>思路说明</h2><p>主要思路是（按照<mark class="hl-label default">宿主机使用虚拟机中的代理为例</mark> ）：虚拟机中连接vpn –&gt; 虚拟机中开启正向代理，把虚拟机弄成代理服务器 –&gt; 宿主机使用Proxifier或者系统自带代理功能，连接虚拟机的代理服务器即可。</p>
+<h2 id="虚拟机网络设置"><a href="#虚拟机网络设置" class="headerlink" title="虚拟机网络设置"></a>虚拟机网络设置</h2><ul>
+<li>虚拟机网络模式 你可以选择<mark class="hl-label default">NAT模式</mark> 或者<mark class="hl-label default">桥接模式</mark> ，但是这两种还是有区别的</li>
+<li>NAT模式：按道理来说，通过NAT模式搭建网络的虚拟机，宿主机和虚拟机不在同一网段，只能虚拟机ping通宿主机，而宿主机无法ping通虚拟机的，所有理论上来讲需要通过虚拟机的<mark class="hl-label default">端口映射</mark> 功能才能正常使用的。<mark class="hl-label red">但是</mark> ，通过实测发现，是直接可以互相ping通的可以直接使用，但是为什么能ping通我也没想清楚，毕竟他们不在同一网段</li>
+</ul>
+<p><img src="https://hexo.lcgui.cn/article/202411102231083.png" alt="image-20241110223128023"></p>
+<mark class="hl-label orange">如果你没ping通</mark> ，那么就是你的防火墙没关，那要是如果你不想关闭防火墙，还想可以通信的话就需要：<span class='p red'>控制面板 --> 系统和安全 -->Windows Defender防火墙 --> 允许应用通过Windows Defender防火墙进行通信 -->勾选上 文件和打印机共享</span>
+
+<p><img src="https://hexo.lcgui.cn/article/202411102237155.png" alt="image-20241110223700123"></p>
+<ul>
+<li>桥接模式，这个模式，是相当于吧虚拟机的等级提升到跟你宿主机一个级别，让宿主机和虚拟机在同一个网络下，也就是在同一内网中，既然在同一内网那肯定是可以互相通信的。</li>
+</ul>
+<p><img src="https://hexo.lcgui.cn/article/202411102224340.png" alt="image-20241110222422288"></p>
+<h2 id="宿主机使用虚拟机中代理"><a href="#宿主机使用虚拟机中代理" class="headerlink" title="宿主机使用虚拟机中代理"></a>宿主机使用虚拟机中代理</h2><p>现在假设我已经在虚拟机中连接上了公司的vpn，那么接下来要用ccproxy 正代工具，值得注意的是ccproxy 只适用于Windows，如果想用linux的话建议使用apache的httpd，或者可以使用其他的。</p>
+<ol>
+<li>打开ccproxy后先进行设置</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202411102211862.png" alt="image-20241110221112825"></p>
+<ol start="2">
+<li>如果你的<mark class="hl-label default">自动检测</mark> 是勾选的，并且后面的ip不是你虚拟机的ip，你需要<mark class="hl-label default">取消勾选</mark> ，然后选择好你的ip，勾选上后面的选择框锁定。其中协议的话如果没有其他需要的话，建议和我选的一样即可，有其他需要自己再做选择。</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202411102212257.png"></p>
+<ol start="3">
+<li>这样就可以在宿主机中使用虚拟机中的vpn了。先配置好代理服务器为你的虚拟机服务器</li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202411102248876.png" alt="image-20241110224844837"></p>
+<p>如果你没看到http的选项，可以在如下位置找到</p>
+<p><img src="https://hexo.lcgui.cn/article/202411102253113.png" alt="image-20241110225316085"></p>
+<ol start="4">
+<li>接下来要配置<mark class="hl-label default">代理规则</mark> </li>
+</ol>
+<p><img src="https://hexo.lcgui.cn/article/202411102257472.png" alt="image-20241110225724436"></p>
+<p><img src="https://hexo.lcgui.cn/article/202411102259674.png" alt="image-20241110225922652"></p>
+<p>这样的话你应该就可以直接在宿主机中访问公司的环境了。</p>
+<p>但是如果你们公司的环境中有用域名的地址，并且域名没有在公网进行解析的话，宿主机中是无法访问的，你需要手动配置你电脑的dns也就是hosts文件，该文件路径为：<mark class="hl-label default">C:\Windows\System32\drivers\etc\hosts</mark> </p>
+<p>前面ip后面域名即可。如果你不知道域名对应的ip，直接在你的虚拟机中 ping 对应域名就能看到了</p>
+<p><img src="https://hexo.lcgui.cn/article/202411102303081.png" alt="image-20241110230331058"></p>
+<h2 id="虚拟机使用宿主机中代理"><a href="#虚拟机使用宿主机中代理" class="headerlink" title="虚拟机使用宿主机中代理"></a>虚拟机使用宿主机中代理</h2><p>虚拟使用宿主机中代理的情况多数是 虚拟机想用宿主机中的梯子进行外网访问而与。这种的话就比较简单，因为梯子的连接软件，本身内置了局域网连接功能，如下。</p>
+<p><img src="https://hexo.lcgui.cn/article/202411102306403.png" alt="image-20241110230640369"></p>
+<p>只需要打开这个功能，然后在虚拟机的网络中设置代理，即可。</p>
+<p><img src="https://hexo.lcgui.cn/article/202411102308445.png" alt="image-20241110230849402"></p>
+<p>这样虚拟机中就可以直接使用，宿主机梯子的网络了</p>
+<p><img src="https://hexo.lcgui.cn/article/202411102309547.png" alt="image-20241110230924511"></p>
+<p>当然 <mark class="hl-label default">宿主机使用虚拟机代理的时候也可以用这种方式</mark> ，但是这种方式只能支持http的协议，也就是ccproxy中开放的808端口了，并且这种代理只能全局代理也就是 所有的软件都要经过代理不能指定软件。</p>
+<p>当然也可以用 Proxifier软件。这个代理协议是http的。自行设置即可。</p>
+<h2 id="软件及VPN分享"><a href="#软件及VPN分享" class="headerlink" title="软件及VPN分享"></a>软件及VPN分享</h2><ul>
+<li><p><a href="http://update.youngzsoft.com/ccproxy/update/ccproxysetup.exe">CCproxy</a></p>
+</li>
+<li><p><a href="https://www.123pan.com/s/4CUpTd-xcN4h">Proxifier</a></p>
+<p><strong>提取码： GJAO</strong></p>
+</li>
+<li><p><a href="https://sakura-cat1.com/register?code=vr5p7wab">梯子链接一</a></p>
+</li>
+<li><p><a href="https://sakura-cat2.com/register?code=vr5p7wab">梯子链接二</a></p>
+</li>
+<li><p><a href="https://sakura-cat-cdn2.com/register?code=vr5p7wab">梯子链接三</a></p>
+</li>
+</ul>
+<p>其他的就自行网络上找吧。</p>
+]]></content>
+      <categories>
+        <category>技术分享</category>
+      </categories>
+      <tags>
+        <tag>网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>易班答题助手使用手册</title>
     <url>/2024/03/22/%E6%98%93%E7%8F%AD%E7%AD%94%E9%A2%98%E5%8A%A9%E6%89%8B%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</url>
     <content><![CDATA[<h1 id="易班答题助手使用手册"><a href="#易班答题助手使用手册" class="headerlink" title="易班答题助手使用手册"></a>易班答题助手使用手册</h1><h4 id="开发背景"><a href="#开发背景" class="headerlink" title="开发背景"></a>开发背景</h4><blockquote>
