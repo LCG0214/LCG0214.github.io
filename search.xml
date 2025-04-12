@@ -1223,4 +1223,43 @@
         <tag>爬虫</tag>
       </tags>
   </entry>
+  <entry>
+    <title>部署dify1.2.0页面报错Internal Server Error</title>
+    <url>/2025/04/12/%E9%83%A8%E7%BD%B2dify1.2.0%E9%A1%B5%E9%9D%A2%E6%8A%A5%E9%94%99Internal%20Server/</url>
+    <content><![CDATA[<h2 id="部署dify1-2-0页面报错Internal-Server-Error"><a href="#部署dify1-2-0页面报错Internal-Server-Error" class="headerlink" title="部署dify1.2.0页面报错Internal Server Error"></a>部署dify1.2.0页面报错Internal Server Error</h2><h3 id="问题表现"><a href="#问题表现" class="headerlink" title="问题表现"></a>问题表现</h3><p>部署完成Dify以后打开页面，登陆成功后发现右上角出现报错：</p>
+<p><img src="https://hexo.lcgui.cn/article/202504121613710.png" alt="image-20250412161314639"></p>
+<p>F12打开控制台，刷新页面，发现控制台包报错：</p>
+<p><img src="https://hexo.lcgui.cn/article/202504121614280.png" alt="image-20250412161419244"></p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><ol>
+<li><p>先停止dify</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker-compose down</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202504121616487.png" alt="image-20250412161646448"></p>
+</li>
+<li><p>修改配置文件<code>.env</code></p>
+<p>由</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">PLUGIN_S3_USE_AWS_MANAGED_IAM</span>=</span><br><span class="line">PLUGIN_S3_USE_PATH_STYLE=</span><br></pre></td></tr></table></figure>
+
+<p>修改为：</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">PLUGIN_S3_USE_AWS_MANAGED_IAM</span>=<span class="literal">false</span></span><br><span class="line"><span class="attr">PLUGIN_S3_USE_PATH_STYLE</span>=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新启动即可</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://hexo.lcgui.cn/article/202504121628412.png" alt="image-20250412162849371"></p>
+<ol start="4">
+<li><p>效果如下：</p>
+<p><img src="https://hexo.lcgui.cn/article/202504121629239.png" alt="image-20250412162921171"></p>
+</li>
+</ol>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术分享</category>
+      </categories>
+      <tags>
+        <tag>bug</tag>
+      </tags>
+  </entry>
 </search>
